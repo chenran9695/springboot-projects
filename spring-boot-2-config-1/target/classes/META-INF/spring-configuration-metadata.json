@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "dog",
+      "type": "com.cr.pojo.Dog",
+      "sourceType": "com.cr.pojo.Dog"
+    }
+  ],
+  "properties": [
+    {
+      "name": "dog.age",
+      "type": "java.lang.Integer",
+      "sourceType": "com.cr.pojo.Dog"
+    },
+    {
+      "name": "dog.name",
+      "type": "java.lang.String",
+      "sourceType": "com.cr.pojo.Dog"
+    }
+  ],
+  "hints": []
+}
