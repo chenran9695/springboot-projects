@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 
 @SpringBootTest
 class Springboot09TestApplicationTests {
@@ -38,7 +39,9 @@ class Springboot09TestApplicationTests {
 
         helper.setSubject("springboot");
         helper.setText("<p style='color:red'>大标题</p>", true);
-
-
+        //附件
+        helper.addAttachment("1.jpg", new File("C:\\Users\\67013\\Pictures\\Saved Pictures\\1.jpg"));
+        helper.setFrom("969532470@qq.com");
+        helper.setTo("chenran_uestc@163.com");
     }
 }
