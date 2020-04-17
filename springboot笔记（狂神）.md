@@ -724,3 +724,266 @@ public final class RedisUtil {
 }
 ```
 
+# 分布式系统理论
+
+## 定义
+
+**分布式系统是若干独立计算机的集合，这些计算机对于用户来说就像单个相关系统。**
+
+分布式系统是由一组通过网络进行通信，为了完成共同的任务而协调工作的计算机节点组成的系统。分布式系统的出现是为了用廉价的、普通的机器完成单个计算机无法完成的计算、存储任务。其目的是利用更多的机器处理更多的数据。
+
+分布式系统是建立在**网络**之上的软件系统。
+
+## Dubbo
+
+参考官方文档：http://dubbo.apache.org/zh-cn/docs/user/preface/background.html
+
+### 入门
+
+#### 什么是Dubbo
+
+Apache Dubbo 是一款高性能】轻量级的开源Java RPC框架，提供了三大核心能力：面向接口的远程方法调用、智能容错和负载均衡，以及服务自动注册和发现。
+
+#### 背景
+
+随着互联网的发展，网站应用的规模不断扩大，常规的垂直应用架构已无法应对，分布式服务架构以及流动计算架构势在必行，亟需一个治理系统确保架构有条不紊的演进。
+
+![image](http://dubbo.apache.org/docs/zh-cn/user/sources/images/dubbo-architecture-roadmap.jpg)
+
+##### 单一应用架构
+
+当网站流量很小时，只需一个应用，将所有功能都部署在一起，以减少部署节点和成本。此时，用于简化增删改查工作量的数据访问框架(ORM)是关键。
+
+##### 垂直应用架构
+
+当访问量逐渐增大，单一应用增加机器带来的加速度越来越小，提升效率的方法之一是将应用拆成互不相干的几个应用，以提升效率。此时，用于加速前端页面开发的Web框架(MVC)是关键。
+
+##### 分布式服务架构
+
+当垂直应用越来越多，应用之间交互不可避免，将核心业务抽取出来，作为独立的服务，逐渐形成稳定的服务中心，使前端应用能更快速的响应多变的市场需求。此时，用于提高业务复用及整合的分布式服务框架(RPC)是关键。
+
+##### 流动计算架构
+
+当服务越来越多，容量的评估，小服务资源的浪费等问题逐渐显现，此时需增加一个调度中心基于访问压力实时管理集群容量，提高集群利用率。此时，用于提高机器利用率的资源调度和治理中心(SOA)是关键。
+
+#### RPC
+
+远程过程调用（Remote Procedure Call），是一种进程间通信方式，是一种技术思想而不是规范。它允许程序调用另一个地址空间（通常是共享网络的另一台机器上）的过程或函数，而不是程序员显示编码这个调用的细节。
+
+##### 基本原理
+
+<img src="C:\Users\67013\AppData\Roaming\Typora\typora-user-images\image-20200416153323611.png" alt="image-20200416153323611" style="zoom:80%;" />
+
+##### 核心
+
+序列化：数据传输需要转换
+
+通讯
+
+### Springboot配置Dubbo
+
+![img](http://dubbo.apache.org/img/architecture.png)
+
+服务提供者（Provider）:暴露服务的服务提供方，服务提供者在启动时向注册中心注册自己提供的服务。
+
+服务消费者（Consumer）:调用远程服务的服务消费方，服务消费者在启动时向注册中心订阅自己需要的服务，服务消费者从提供者地址列表种，基于软负载均衡算法，选一台提供者进行调用，如果调用失败，再选另一台。
+
+注册中心（Registry）：注册中心返回服务提供者地址列表给消费者，如果有变更，注册中心将基于长连接推送变更数据给消费者。
+
+监控中心（Monitor）:服务消费者和提供者在内存种累计调用次数和调用时间，定时发送一次统计数据到监控中心。
+
+### windows下安装Dubbo-admin
+
+Dubbo本身并非服务软件，而是一个jar包，用于java程序连接zookeeper，并利用zookeeper消费、提供服务
+
+Dubbo-admin:可视化的监视程序
+
+#### 安装步骤
+
+1.下载Dubbo-admin
+
+下载地址：https://github.com/apache/dubbo-admin/tree/master
+
+2.解压并修改配置文件
+
+修改dubbo/admin/src/main/resources/application.properties指定zookeeper地址
+
+```properties
+server.port=7001
+spring.velocity.cache=false
+spring.velocity.charset=UTF-8
+spring.velocity.layout-url=/templates/default.vm
+spring.messages.fallback-to-system-locale=false
+spring.messages.basename=i18n/message
+spring.root.password=root
+spring.guest.password=guest
+dubbo.registry.address=zookeeper://127.0.0.1:2181
+```
+
+3.在项目目录下打包Dubbo-admin(也可在IDEA中进行打包)
+
+```properties
+mvn clean package -Dmaven.test.skip=true
+```
+
+4.执行dubbo-admin\target下的dubbo-admin-0.0.1-SNAPSHOT.jar
+
+```properties
+java -jar dubbo-admin-0.0.1-SNAPSHOT.jar
+```
+
+默认账号密码：root
+
+## Zookeeper
+
+### 简介
+
+Zookeeper是一个注册中心。
+
+ZooKeeper是一个[分布式](https://baike.baidu.com/item/分布式/19276232)的，开放源码的[分布式应用程序](https://baike.baidu.com/item/分布式应用程序/9854429)协调服务，是[Google](https://baike.baidu.com/item/Google)的Chubby一个[开源](https://baike.baidu.com/item/开源/246339)的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。
+
+ZooKeeper的目标就是封装好复杂易出错的关键服务，将简单易用的接口和性能高效、功能稳定的系统提供给用户。
+
+ZooKeeper包含一个简单的原语集，提供Java和C的接口。
+
+ZooKeeper代码版本中，提供了分布式独享锁、选举、队列的接口，代码在$zookeeper_home\src\recipes。其中分布锁和队列有[Java](https://baike.baidu.com/item/Java/85979)和C两个版本，选举只有Java版本。
+
+## 项目实践
+
+前提：zookeeper服务开启
+
+1.提供者提供服务
+
+​	1.1导入依赖
+
+​	1.2配置注册中心地址，服务发现名和要扫描的包
+
+​	1.3在想要被注册的服务上增加注解@org.apache.dubbo.config.annotation.Service
+
+2.消费者消费
+
+​	2.1导入依赖
+
+​	2.2配置注册中心地址，服务发现名
+
+​	2.3从远程注册服务~@Reference
+
+![image-20200417151936299](C:\Users\67013\AppData\Roaming\Typora\typora-user-images\image-20200417151936299.png)
+
+2.配置文件
+
+application.properties
+
+```java
+server.port=8082
+#注册中心地址
+dubbo.registry.address=zookeeper://127.0.0.1:2181
+#服务应用名字
+dubbo.application.name=provider-server
+#被注册的服务
+dubbo.scan.base-packages=com.cr.service
+```
+
+pom.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.6.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.cr</groupId>
+    <artifactId>provider-server</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>provider-server</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <!--导入dubbo和zookeeper依赖-->
+        <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-spring-boot-starter -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>2.7.6</version>
+        </dependency>
+        <!--zookeeper-client-->
+        <!-- https://mvnrepository.com/artifact/com.github.sgroschupf/zkclient -->
+        <dependency>
+            <groupId>com.github.sgroschupf</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--zookeeper-->
+        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-recipes -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.6.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+
+
+3.开启zookeeper
+
+参考"Zookeeper"一节
+
+4.运行dubbo-admin.jar包和dubbo-zookeeper的模块provider-server查看服务情况
+
+参考"Dubbo"一节。
+
+进入localhost:7001即可查看服务运行情况（默认账号密码均为root）
+
+![image-20200417153310165](C:\Users\67013\AppData\Roaming\Typora\typora-user-images\image-20200417153310165.png)
